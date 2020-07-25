@@ -1,3 +1,5 @@
+<#assign useOriginalName = true>
+
 <#if package?has_content>
 package ${package};
 
@@ -32,8 +34,19 @@ public enum ${className}<#if implements?has_content> implements <#list implement
 <#if field.deprecated>
     @Deprecated
 </#if>
-    ${field.value}<#if field_has_next>,</#if>
+    ${field.javaName}<#if useOriginalName>("${field.graphqlName}")</#if><#if field_has_next>,<#else>;</#if>
 </#list>
 </#if>
+<#if useOriginalName>
+    private final String graphqlName;
 
+    private ${className}(String graphqlName) {
+        this.graphqlName = graphqlName;
+    }
+
+    @Override
+    public String toString() {
+        return this.graphqlName;
+    }
+</#if>
 }
